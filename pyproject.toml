@@ -1,0 +1,72 @@
+[project]
+name = "ai-cli"
+version = "0.1.0"
+description = "Advanced AI-powered command-line tools for Ubuntu systems that simplify complex tasks through intelligent data parsing and AI-assisted operations"
+readme = "README.md"
+authors = [
+    { name = "alanred", email = "tatanrhf@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "rich>=14.0.0",
+    "typer>=0.15.2",
+    "tomli>=2.0.0",
+    "aiofiles>=24.1.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.11.6",
+    "pyright>=1.1.399",
+]
+
+[project.scripts]
+ai-cli = "src.ai_cli.main:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Documentation = "https://github.com/username/ai-cli#readme"
+Issues = "https://github.com/username/ai-cli/issues"
+Source = "https://github.com/username/ai-cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_cli"]
+
+[tool.ruff]
+line-length = 200
+# select = ["E", "F", "W", "I", "N", "D"]
+# ignore = []
+
+[tool.ruff.lint]
+# select = ["ALL"]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+force-single-line = false
+case-sensitive = true
+combine-as-imports = true
+force-sort-within-sections = true
+
+[tool.ruff.format]
+# quote-style = "double" # Ejemplo: preferir comillas dobles
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__", "**/.*"]
+reportMissingImports = "warning"
+reportUnusedVariable = "warning"
+pythonVersion = "3.13"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+reportOptionalSubscript = "none"
+reportOptionalMemberAccess = "none"
+reportOptionalCall = "none"
+reportOptionalIterable = "none"
+reportOptionalContextManager = "none"
+reportOptionalOperand = "none"
+reportArgumentType = "none"
+reportAttributeAccessIssue = "none"
+reportGeneralTypeIssues = "none"
