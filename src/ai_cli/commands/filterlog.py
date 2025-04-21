@@ -16,27 +16,23 @@ async def filterlog(
             "--output",
             "-o",
             help="Custom output file path",
-            callback=lambda output: validate_file_parent_dir_exists(output) if output else None,
+            callback=validate_file_parent_dir_exists,
             rich_help_panel="Customization and Utils",
         ),
     ] = None,
 ):
     """Filter lines containing all substrings (case-insensitive) from a text file"""
-    filtered = []
-
+    output = output.expanduser().resolve() if output else Path.cwd() / f"{file.stem}-filtered{file.suffix}"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    
     try:
-        async with aiofiles.open(file, mode="r") as f:
-            async for line in f:
+        async with aiofiles.open(file, mode="r") as input_file, aiofiles.open(output, mode="w") as output_file:
+            async for line in input_file:
                 line_lower = line.lower()
                 if all(sub.lower() in line_lower for sub in substrings):
-                    filtered.append(line)
+                    await output_file.write(line)
     except UnicodeDecodeError:
         typer.echo("Error: File is not a text file", err=True)
         raise typer.Exit(code=1)
-
-    output = output.expanduser().resolve() if output else Path.cwd() / f"{file.stem}-filtered{file.suffix}"
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w") as f:
-        f.writelines(filtered)
 
     typer.echo(f"Generated filtered file at: {output}")
