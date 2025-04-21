@@ -1,8 +1,9 @@
-.PHONY: install test clean lint run
+.PHONY: install test clean lint run build bump
 
 PACKAGE ?= src
 VENV := .venv
 VENV_BIN := $(VENV)/bin
+BUILD_DIR := dist
 
 # Definición de colores
 GREEN := \033[0;32m
@@ -25,6 +26,29 @@ install:
 	@echo "$(BLUE)Installing dependencies...$(NC)"
 	@uv sync
 	@uv pip uninstall ai-cli && uv pip install -e .
+
+bump:
+	@echo "$(BLUE)Bumping version...$(NC)"
+	@if [ -n "$(filter --downgrade,$(MAKECMDGOALS))" ]; then \
+		DOWNGRADE="--downgrade"; \
+	fi; \
+	RULE="version"; \
+	for arg in $(MAKECMDGOALS); do \
+		if [ "$$arg" != "bump" ] && [ "$$arg" != "--downgrade" ]; then \
+			RULE="version $$arg"; \
+			break; \
+		fi; \
+	done; \
+	uv run scripts/transformers/version_bumper.py $$RULE $$DOWNGRADE
+	@for arg in $(MAKECMDGOALS); do \
+		if [ "$$arg" != "bump" ]; then \
+			$(MAKE) --no-print-directory -f $(firstword $(MAKEFILE_LIST)) dummy DUMMY="$$arg" > /dev/null 2>&1 || true; \
+		fi; \
+	done
+
+build:
+	@echo "$(BLUE)Building application into $(BUILD_DIR) directory...$(NC)"
+	@uv build
 
 test:
 	@echo "$(BLUE)Running tests...$(NC)"
@@ -52,6 +76,7 @@ clean:
 	@find . -type d -name ".coverage" -exec rm -rf {} +
 	@find . -type d -name "htmlcov" -exec rm -rf {} +
 	@find . -type f -name "*-filtered.log" -delete
+	@rm -rf $(BUILD_DIR)
 	@echo "$(GREEN)Clean complete.$(NC)"
 
 run:
