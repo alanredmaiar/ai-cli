@@ -11,16 +11,20 @@ dependencies = [
     "rich>=14.0.0",
     "typer>=0.15.2",
     "tomli>=2.0.0",
-    "aiofiles>=24.1.0",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
     "pytest-mock>=3.14.0",
     "ruff>=0.11.6",
     "pyright>=1.1.399",
+    "pydantic-settings>=2.9.1",
+    "aiofiles>=24.1.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_cli"]
+
 [project.scripts]
-ai-cli = "src.ai_cli.main:app"
+ai-cli = "ai_cli.main:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -30,9 +34,6 @@ build-backend = "hatchling.build"
 Documentation = "https://github.com/username/ai-cli#readme"
 Issues = "https://github.com/username/ai-cli/issues"
 Source = "https://github.com/username/ai-cli"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/ai_cli"]
 
 [tool.ruff]
 line-length = 200

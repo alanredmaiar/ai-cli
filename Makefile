@@ -1,4 +1,4 @@
-.PHONY: install test clean lint
+.PHONY: install test clean lint run
 
 PACKAGE ?= src
 VENV := .venv
@@ -24,6 +24,7 @@ COMPILE_cpp_OUT=$$($(COMPILE_cpp) 2>&1 | sed 's/error/$(RED)error$(NC)/g' 's/war
 install:
 	@echo "$(BLUE)Installing dependencies...$(NC)"
 	@uv sync
+	@uv pip uninstall ai-cli && uv pip install -e .
 
 test:
 	@echo "$(BLUE)Running tests...$(NC)"
@@ -52,3 +53,7 @@ clean:
 	@find . -type d -name "htmlcov" -exec rm -rf {} +
 	@find . -type f -name "*-filtered.log" -delete
 	@echo "$(GREEN)Clean complete.$(NC)"
+
+run:
+	@echo "$(BLUE)Running command: $(CMD) $(ARGS)$(NC)"
+	@$(VENV_BIN)/python -m src/ai_cli.main.py $(CMD) $(ARGS)

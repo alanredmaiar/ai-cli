@@ -13,7 +13,11 @@ async def filterlog(
     output: Annotated[
         Path | None,
         typer.Option(
-            None, "-o", "--output", help="Custom output file path", callback=lambda output: validate_file_parent_dir_exists(output) if output else None, rich_help_panel="Customization and Utils"
+            "--output",
+            "-o",
+            help="Custom output file path",
+            callback=lambda output: validate_file_parent_dir_exists(output) if output else None,
+            rich_help_panel="Customization and Utils",
         ),
     ] = None,
 ):
@@ -30,14 +34,8 @@ async def filterlog(
         typer.echo("Error: File is not a text file", err=True)
         raise typer.Exit(code=1)
 
-    if output:
-        output = output.expanduser().resolve()
-    else:
-        new_name = f"{file.stem}-filtered{file.suffix}"
-        output = Path.cwd() / new_name
-
+    output = output.expanduser().resolve() if output else Path.cwd() / f"{file.stem}-filtered{file.suffix}"
     output.parent.mkdir(parents=True, exist_ok=True)
-
     with output.open("w") as f:
         f.writelines(filtered)
 
