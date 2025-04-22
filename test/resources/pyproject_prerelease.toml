@@ -1,0 +1,13 @@
+[project]
+name = "test-project"
+version = "1.2.3a1"
+description = "A test project with prerelease version"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build" 

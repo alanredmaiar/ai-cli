@@ -13,21 +13,44 @@ RULES = {
 
 def prerelease_bump(m, downgrade):
     major, minor, patch, pre = m
+    major, minor, patch = int(major), int(minor), int(patch)
+    
     if pre:
         tag, num = re.match(r'(\D+)(\d+)', pre).groups()
         num = int(num)
-        num = num - 1 if downgrade else num + 1
-        return int(major), int(minor), int(patch), f'{tag}{num}'
-    return int(major), int(minor), int(patch)+(not downgrade or -1), 'a0'
+        
+        if downgrade:
+            if num > 0:
+                # Normal prerelease downgrade
+                return major, minor, patch, f'{tag}{num-1}'
+            else:
+                # If we're at x.y.za0, going down should reduce the patch level
+                return major, minor, patch-1, ''
+        else:
+            # Normal prerelease increment
+            return major, minor, patch, f'{tag}{num+1}'
+    else:
+        # For non-prerelease versions, increment the patch and add 'a0' or just increment/decrement normally
+        if downgrade:
+            return major, minor, patch-1, ''
+        else:
+            return major, minor, patch, 'a0'
 
 
 def bump_version(current, rule, downgrade=False):
-    match = re.match(r'(\d+)\.(\d+)\.(\d+)([a-z]\d+)?', current)
+    match = re.match(r'^(\d+)\.(\d+)\.(\d+)([a-z]\d+)?$', current)
     if not match:
         raise ValueError("Invalid version format")
+    
     groups = match.groups()
     major, minor, patch, pre = RULES[rule](groups, downgrade)
-    return f"{major}.{minor}.{patch}{pre}"
+    
+    # Format the version string
+    result = f"{major}.{minor}.{patch}"
+    if pre:
+        result += pre
+    
+    return result
 
 
 def update_pyproject(rule='patch', downgrade=False):
