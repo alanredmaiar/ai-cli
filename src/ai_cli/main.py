@@ -2,9 +2,8 @@ import asyncio
 import warnings
 
 from ai_cli.asyn import async_click as click
-
+from ai_cli.commands.log import log
 from ai_cli.settings import settings as st
-from ai_cli.commands import filterlog
 
 
 def main():
@@ -17,7 +16,7 @@ def main():
     async def app(ctx):
         pass
 
-    app.add_command(filterlog)
+    app.add_command(log)
     asyncio.run(app())
 
 

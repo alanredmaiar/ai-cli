@@ -1,6 +1,6 @@
 [project]
 name = "ai-cli"
-version = "0.1.2"
+version = "0.1.3"
 description = "Advanced AI-powered command-line tools for Ubuntu systems that simplify complex tasks through intelligent data parsing and AI-assisted operations"
 readme = "README.md"
 authors = [
