@@ -12,7 +12,6 @@ def runner():
     return CliRunner()
 
 
-@pytest.mark.asyncio
 async def test_filter_by_single_substring(sample_log_path, temp_output_path, cleanup_output):
     """Test filtering by a single substring."""
     # Call the filterlog function directly with a single substring
@@ -34,7 +33,6 @@ async def test_filter_by_single_substring(sample_log_path, temp_output_path, cle
     assert all("ERROR" in line for line in lines)
 
 
-@pytest.mark.asyncio
 async def test_filter_by_multiple_substrings(sample_log_path, temp_output_path, cleanup_output):
     """Test filtering by multiple substrings."""
     # Call the filterlog function with multiple substrings
@@ -56,7 +54,6 @@ async def test_filter_by_multiple_substrings(sample_log_path, temp_output_path, 
     assert all("INFO" in line and "success" in line for line in lines)
 
 
-@pytest.mark.asyncio
 async def test_case_insensitive_filtering(sample_log_path, temp_output_path, cleanup_output):
     """Test that filtering is case-insensitive."""
     # Call with mixed case substrings
@@ -78,7 +75,6 @@ async def test_case_insensitive_filtering(sample_log_path, temp_output_path, cle
     assert all("WARNING" in line for line in lines)
 
 
-@pytest.mark.asyncio
 async def test_default_output_path(sample_log_path, monkeypatch, cleanup_output):
     """Test the default output path when none is specified."""
     
@@ -108,7 +104,6 @@ async def test_default_output_path(sample_log_path, monkeypatch, cleanup_output)
             expected_output.unlink()
 
 
-@pytest.mark.asyncio
 async def test_no_matching_lines(sample_log_path, temp_output_path, cleanup_output):
     """Test behavior when no lines match the filtering criteria."""
     # Call with a substring that doesn't exist in the log
@@ -123,7 +118,6 @@ async def test_no_matching_lines(sample_log_path, temp_output_path, cleanup_outp
     assert temp_output_path.stat().st_size == 0
 
 
-@pytest.mark.asyncio
 async def test_parent_directory_creation(sample_log_path, tmp_path, cleanup_output):
     """Test that parent directories are created if they don't exist."""
     # Create a deeper path that doesn't exist yet
@@ -151,7 +145,6 @@ async def test_parent_directory_creation(sample_log_path, tmp_path, cleanup_outp
 @pytest.mark.parametrize("non_text_file", [
     pytest.param(True, marks=pytest.mark.xfail(raises=typer.Exit, reason="Binary file should raise UnicodeDecodeError")),
 ])
-@pytest.mark.asyncio
 async def test_non_text_file_handling(temp_output_path, cleanup_output, non_text_file, tmp_path):
     """Test handling of non-text (binary) files."""
     if non_text_file:

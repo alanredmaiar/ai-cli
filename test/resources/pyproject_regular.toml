@@ -1,0 +1,13 @@
+[project]
+name = "test-project"
+version = "1.2.3"
+description = "A test project for version bumping"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build" 
