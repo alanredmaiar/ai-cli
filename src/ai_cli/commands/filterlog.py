@@ -1,28 +1,25 @@
 from pathlib import Path
-from typing import Annotated
 
 import aiofiles
-import typer
+import rich_click as click
 
 from ai_cli.validators.files import validate_file_parent_dir_exists
 
 
-async def filterlog(
-    file: Path = typer.Argument(..., exists=True, file_okay=True, dir_okay=False, help="Input text file to filter"),
-    substrings: list[str] = typer.Argument(..., help="Substrings to filter (all must be present in line)"),
-    output: Annotated[
-        Path | None,
-        typer.Option(
-            "--output",
-            "-o",
-            help="Custom output file path",
-            callback=validate_file_parent_dir_exists,
-            rich_help_panel="Customization and Utils",
-        ),
-    ] = None,
-):
+@click.command()
+@click.argument("file", type=click.Path(exists=True, file_okay=True, dir_okay=False), help="Input text file to filter")
+@click.argument("substrings", nargs=-1, required=True, help="Substrings to filter (all must be present in line)")
+@click.option(
+    "--output", "-o", 
+    type=click.Path(), 
+    help="Custom output file path",
+    callback=validate_file_parent_dir_exists
+)
+async def filterlog(file, substrings, output):
     """Filter lines containing all substrings (case-insensitive) from a text file"""
-    output = output.expanduser().resolve() if output else Path.cwd() / f"{file.stem}-filtered{file.suffix}"
+    file = Path(file)
+    output = Path(output) if output else Path.cwd() / f"{file.stem}-filtered{file.suffix}"
+    output = output.expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     
     try:
@@ -32,7 +29,8 @@ async def filterlog(
                 if all(sub.lower() in line_lower for sub in substrings):
                     await output_file.write(line)
     except UnicodeDecodeError:
-        typer.echo("Error: File is not a text file", err=True)
-        raise typer.Exit(code=1)
+        click.echo("Error: File is not a text file", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(code=1)
 
-    typer.echo(f"Generated filtered file at: {output}")
+    click.echo(f"Generated filtered file at: {output}")
