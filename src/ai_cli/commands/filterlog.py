@@ -1,14 +1,14 @@
 from pathlib import Path
 
 import aiofiles
-import rich_click as click
+from ai_cli.asyn import click
 
 from ai_cli.validators.files import validate_file_parent_dir_exists
 
 
 @click.command()
-@click.argument("file", type=click.Path(exists=True, file_okay=True, dir_okay=False), help="Input text file to filter")
-@click.argument("substrings", nargs=-1, required=True, help="Substrings to filter (all must be present in line)")
+@click.argument("file", type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.argument("substrings", nargs=-1, required=True)
 @click.option(
     "--output", "-o", 
     type=click.Path(), 

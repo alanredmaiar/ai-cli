@@ -1,26 +1,24 @@
-import rich_click as click
+import asyncio
+import warnings
+
+from ai_cli.asyn import async_click as click
 
 from ai_cli.settings import settings as st
-from ai_cli.utils import register_commands, register_callbacks
-from ai_cli.options import version
 from ai_cli.commands import filterlog
 
 
 def main():
     """Entry point for the application."""
+    warnings.filterwarnings("ignore", message="coroutine '.*' was never awaited")
 
-    app = click.group(
-        help=st.PYPROJECT["project"]["description"],
-    )(lambda: None)
+    @click.group(name=st.PYPROJECT["project"]["name"])
+    @click.version_option(st.PYPROJECT["project"]["version"])
+    @click.pass_context
+    async def app(ctx):
+        pass
 
-    options = [version]
-    commands = [filterlog]  
-
-    register_commands(app, commands)
-    register_callbacks(app, options)
-    
-    
-    app()
+    app.add_command(filterlog)
+    asyncio.run(app())
 
 
 if __name__ == "__main__":
